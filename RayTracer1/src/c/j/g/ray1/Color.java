@@ -8,11 +8,14 @@ import lombok.experimental.Builder;
 public class Color {
 	private final double r, g, b;
 
-	public java.awt.Color getAsAWTColor() {
-		return new java.awt.Color((float) r, (float) g, (float) b);
-	}
-
 	public int getRGB() {
-		return getAsAWTColor().getRGB();
+	   return 
+            ((1 & 0xFF) << 24) |
+            ((aI(r) & 0xFF) << 16) |
+            ((aI(g) & 0xFF) << 8)  |
+            ((aI(b) & 0xFF) << 0);
+	}
+	private int aI(double c){
+	    return (int)(c * 255 + 0.f);
 	}
 }
