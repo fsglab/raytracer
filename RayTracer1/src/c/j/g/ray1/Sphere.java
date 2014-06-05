@@ -29,7 +29,6 @@ public class Sphere {
 		HitInfoBuilder hjb = HitInfo.builder();
 		hjb.distance(t);
 		hjb.gHitPoint(pos);
-		hjb.gHitNormal(nor(sub(pos, origin)));
 		hjb.geo(this);
 		return hjb.build();
 	}

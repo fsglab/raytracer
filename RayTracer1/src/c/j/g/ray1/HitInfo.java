@@ -7,7 +7,7 @@ import lombok.experimental.Builder;
 @Builder
 public class HitInfo {
 
-	private final Vec3 gHitPoint, gHitNormal;
+	private final Vec3 gHitPoint;
 	private final double distance;
 	private final Sphere geo;
 	
