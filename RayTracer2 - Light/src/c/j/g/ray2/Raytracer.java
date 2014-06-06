@@ -14,7 +14,7 @@ import lombok.Data;
 import lombok.experimental.Builder;
 import c.j.g.ray2.light.AmbientLighting;
 import c.j.g.ray2.light.Light;
-import c.j.g.ray2.light.PointLight;
+import c.j.g.ray2.light.DiffusePointLight;
 
 @Data
 @Builder
@@ -27,8 +27,8 @@ public class Raytracer {
 	spheren[2] = new Sphere(new Color(0, 1, 0), new Vec3(3, -4, 9), 2);
 
 	Light[] lights = new Light[2];
-	lights[0] = new AmbientLighting(new Color(0.1, 0.1, 0.1));
-	lights[1] = new PointLight(new Vec3(-5, -5, 0), new Color(1, 1, 1), 1);
+	lights[0] = new AmbientLighting(new Color(0.0, 0.0, 0.0));
+	lights[1] = new DiffusePointLight(new Vec3(-5, -5, 0), new Color(1, 1, 1), 1e2);
 
 	Raytracer tracer = new Raytracer(spheren, lights);
 	BufferedImage im = tracer.render(600, 400, 330);

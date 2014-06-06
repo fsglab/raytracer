@@ -12,7 +12,7 @@ import static c.j.g.ray2.Color.*;
 @Data
 @Builder
 @AllArgsConstructor
-public class PointLight implements Light {
+public class DiffusePointLight implements Light {
 
     private final Vec3 origin;
     private final Color color;
@@ -20,10 +20,16 @@ public class PointLight implements Light {
 
     @Override
     public Color getColor(HitInfo hi) {
+	
+	double i = intensity;
+	i *= 1 / lenSqu(sub(hi.getGHitPoint(), origin));
+	if(i == 0)
+	    return Color.BLACK;
+	
 	Vec3 surfaceToLight = sub(origin, hi.getGHitPoint());
 	double brightness = cosAngle(hi.getGNormal(), surfaceToLight);
 	if (brightness < 0)
 	    return Color.BLACK;
-	return mul(color, intensity * brightness);
+	return mul(color, i * brightness);
     }
 }
