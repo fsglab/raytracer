@@ -1,7 +1,6 @@
 package c.j.g.ray2;
 
 import static c.j.g.ray2.Color.add;
-import static c.j.g.ray2.Color.mul;
 import static c.j.g.ray2.Vec3.nor;
 
 import java.awt.image.BufferedImage;
@@ -13,8 +12,8 @@ import javax.imageio.ImageIO;
 import lombok.Data;
 import lombok.experimental.Builder;
 import c.j.g.ray2.light.AmbientLighting;
-import c.j.g.ray2.light.Light;
 import c.j.g.ray2.light.DiffusePointLight;
+import c.j.g.ray2.light.Light;
 import c.j.g.ray2.light.SpecularPointLight;
 
 @Data
@@ -61,13 +60,6 @@ public class Raytracer {
 	return im;
     }
 
-    public Color getLight(HitInfo akt) {
-	Color c = Color.BLACK;
-	for (Light l : lights)
-	    c = add(c, l.getColor(akt));
-	return c;
-    }
-
     private Color getCol(Ray ray) {
 	HitInfo akt = null;
 	for (Sphere s : spheren) {
@@ -76,10 +68,12 @@ public class Raytracer {
 		if (akt == null || i.getDistance() < akt.getDistance())
 		    akt = i;
 	}
-	if (akt == null)
-	    return Color.BLACK;
-	else
-	    return mul(akt.getGeo().getColor(), getLight(akt));
+
+	Color col = Color.BLACK;
+	if (akt != null)
+	    for (Light l : lights)
+		col = add(col, l.getColor(akt));
+	return col;
 
     }
 

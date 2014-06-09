@@ -23,13 +23,13 @@ public class DiffusePointLight implements Light {
 	
 	double i = intensity;
 	i *= 1 / lenSqu(sub(hi.getGHitPoint(), origin));
-	if(i == 0)
+	if(i <= 0)
 	    return Color.BLACK;
 	
 	Vec3 surfaceToLight = sub(origin, hi.getGHitPoint());
 	double brightness = cosAngle(hi.getGNormal(), surfaceToLight);
 	if (brightness < 0)
 	    return Color.BLACK;
-	return mul(color, i * brightness);
+	return mul(mul(color,hi.getGeo().getColor()) , i * brightness);
     }
 }

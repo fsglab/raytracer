@@ -25,18 +25,27 @@ public class SpecularPointLight implements Light {
     @Override
     public Color getColor(HitInfo hi) {
 
+	double i = intensity;
+	i *= 1 / lenSqu(sub(hi.getGHitPoint(), origin));
+	if (i <= 0)
+	    return Color.BLACK;
+
 	Vec3 lightDir = nor(sub(hi.getGHitPoint(), origin));
-	    Vec3 dirLight = mul(lightDir, -1);
-	    Vec3 r = reflect(dirLight, hi.getGNormal());
-	    double dot = dot(r, mul(hi.getRay().getDirection(), -1));
-	    if(dot < 0)
-		return Color.BLACK;
-	    Color light = mul(hi.getGeo().getSpecColor(), color);
-	    ColorBuilder b = Color.builder();
-	    b.r(Math.pow(light.getR()*dot, e));
-	    b.g(Math.pow(light.getG()*dot, e));
-	    b.b(Math.pow(light.getB()*dot, e));
-	    return b.build().clamp();
+	Vec3 surfaceToLight = mul(lightDir, -1);
+	double brightness = cosAngle(hi.getGNormal(), surfaceToLight);
+	if (brightness < 0)
+	    return Color.BLACK;
+
+	Vec3 r = reflect(surfaceToLight, hi.getGNormal());
+	double dot = dot(r, mul(hi.getRay().getDirection(), -1));
+	if (dot < 0)
+	    return Color.BLACK;
+	Color light = mul(hi.getGeo().getSpecColor(), color);
+	ColorBuilder b = Color.builder();
+	b.r(Math.pow(light.getR() * dot, e));
+	b.g(Math.pow(light.getG() * dot, e));
+	b.b(Math.pow(light.getB() * dot, e));
+	return mul(b.build().clamp(), brightness);
     }
 
 }

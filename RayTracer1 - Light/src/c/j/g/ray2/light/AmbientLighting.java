@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.experimental.Builder;
 import c.j.g.ray2.Color;
 import c.j.g.ray2.HitInfo;
+import c.j.g.ray2.Vec3;
 
 @Data
 @Builder
@@ -15,7 +16,7 @@ public class AmbientLighting implements Light{
     
     @Override
     public Color getColor(HitInfo hi) {
-	return color;
+	return Color.mul(color, hi.getGeo().getColor());
     }
     
 }
