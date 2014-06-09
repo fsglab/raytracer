@@ -10,5 +10,6 @@ public class HitInfo {
 	private final Vec3 gHitPoint, gNormal;
 	private final double distance;
 	private final Sphere geo;
+	private final Ray ray;
 	
 }

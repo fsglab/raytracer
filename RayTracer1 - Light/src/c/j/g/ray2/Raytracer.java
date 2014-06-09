@@ -15,6 +15,7 @@ import lombok.experimental.Builder;
 import c.j.g.ray2.light.AmbientLighting;
 import c.j.g.ray2.light.Light;
 import c.j.g.ray2.light.DiffusePointLight;
+import c.j.g.ray2.light.SpecularPointLight;
 
 @Data
 @Builder
@@ -22,13 +23,19 @@ public class Raytracer {
 
     public static void main(String[] args) throws IOException {
 	Sphere[] spheren = new Sphere[3];
-	spheren[0] = new Sphere(new Color(0, 0, 1), new Vec3(0, 0, 10), 4);
-	spheren[1] = new Sphere(new Color(1, 0, 0), new Vec3(4, 5, 14), 4);
-	spheren[2] = new Sphere(new Color(0, 1, 0), new Vec3(3, -4, 9), 2);
+	spheren[0] = new Sphere(new Color(0, 0, 1), new Color(1, 1, 1),
+		new Vec3(0, 0, 10), 4);
+	spheren[1] = new Sphere(new Color(1, 0, 0), new Color(1, 1, 1),
+		new Vec3(4, 5, 14), 4);
+	spheren[2] = new Sphere(new Color(0, 1, 0), new Color(1, 1, 1),
+		new Vec3(3, -4, 9), 2);
 
-	Light[] lights = new Light[2];
+	Light[] lights = new Light[3];
 	lights[0] = new AmbientLighting(new Color(0.0, 0.0, 0.0));
-	lights[1] = new DiffusePointLight(new Vec3(-5, -5, 0), new Color(1, 1, 1), 1e2);
+	lights[1] = new DiffusePointLight(new Vec3(-5, -5, 0), new Color(1, 1,
+		1), 50);
+	lights[2] = new SpecularPointLight(new Vec3(-5, -5, 0), new Color(1, 1,
+		1), 1e2, 50);
 
 	Raytracer tracer = new Raytracer(spheren, lights);
 	BufferedImage im = tracer.render(600, 400, 330);

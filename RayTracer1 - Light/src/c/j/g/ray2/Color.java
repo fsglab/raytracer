@@ -7,8 +7,8 @@ import lombok.experimental.Builder;
 @Builder
 public class Color {
     private final double r, g, b;
-    
-    public static final Color BLACK = new Color(0,0,0);
+
+    public static final Color BLACK = new Color(0, 0, 0);
 
     public static Color mul(Color a, Color b) {
 	return new Color(a.r * b.r, a.g * b.g, a.b * b.b);
@@ -16,6 +16,18 @@ public class Color {
 
     public static Color mul(Color a, double d) {
 	return new Color(a.r * d, a.g * d, a.b * d);
+    }
+
+    public Color clamp() {
+	ColorBuilder cb = Color.builder();
+	cb.r = clamp(r, 0, 1);
+	cb.g = clamp(g, 0, 1);
+	cb.b = clamp(b, 0, 1);
+	return cb.build();
+    }
+
+    private double clamp(double r, double min, double max) {
+return Math.min(max, Math.max(min, r));
     }
 
     public static Color add(Color a, Color b) {

@@ -20,9 +20,18 @@ public class Vec3 {
     public static double angle(Vec3 a, Vec3 b) {
 	return Math.acos(cosAngle(a, b));
     }
-    
-    public static double cosAngle(Vec3 a, Vec3 b){
+
+    public static double cosAngle(Vec3 a, Vec3 b) {
 	return dot(a, b) / (len(a) * len(b));
+    }
+
+    public static Vec3 reflect(Vec3 v, Vec3 n) {
+	double dot = dot(v, n);
+	Vec3Builder b = Vec3.builder();
+	b.x = 2 * dot * n.x - v.x;
+	b.y = 2 * dot * n.y - v.y;
+	b.z = 2 * dot * n.z - v.z;
+	return b.build();
     }
 
     public static Vec3 sub(Vec3 a, Vec3 b) {

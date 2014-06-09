@@ -1,0 +1,42 @@
+package c.j.g.ray2.light;
+
+import static c.j.g.ray2.Vec3.*;
+import static c.j.g.ray2.Color.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.experimental.Builder;
+import c.j.g.ray2.Color;
+import c.j.g.ray2.HitInfo;
+import c.j.g.ray2.Vec3;
+
+/*
+ * Phong
+ */
+
+@Data
+@Builder
+@AllArgsConstructor
+public class SpecularPointLight implements Light {
+
+    private final Vec3 origin;
+    private final Color color;
+    private final double intensity, e;
+
+    @Override
+    public Color getColor(HitInfo hi) {
+
+	Vec3 lightDir = nor(sub(hi.getGHitPoint(), origin));
+	    Vec3 dirLight = mul(lightDir, -1);
+	    Vec3 r = reflect(dirLight, hi.getGNormal());
+	    double dot = dot(r, mul(hi.getRay().getDirection(), -1));
+	    if(dot < 0)
+		return Color.BLACK;
+	    Color light = mul(hi.getGeo().getSpecColor(), color);
+	    ColorBuilder b = Color.builder();
+	    b.r(Math.pow(light.getR()*dot, e));
+	    b.g(Math.pow(light.getG()*dot, e));
+	    b.b(Math.pow(light.getB()*dot, e));
+	    return b.build().clamp();
+    }
+
+}

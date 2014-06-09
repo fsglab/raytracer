@@ -9,7 +9,7 @@ import static java.lang.Math.*;
 @Data
 @Builder
 public class Sphere {
-    private final Color color;
+    private final Color color, specColor;
     private final Vec3 origin;
     private final double radius;
     
@@ -34,6 +34,7 @@ public class Sphere {
 	hjb.distance(t);
 	hjb.gHitPoint(pos);
 	hjb.gNormal(normalAt(pos));
+	hjb.ray(ray);
 	hjb.geo(this);
 	return hjb.build();
     }
