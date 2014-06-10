@@ -44,6 +44,6 @@ return Math.min(max, Math.max(min, r));
     }
 
     private int aI(double c) {
-	return (int) (c * 255 + 0.f);
+	return (int) (c * 255 + 0.5f);
     }
 }

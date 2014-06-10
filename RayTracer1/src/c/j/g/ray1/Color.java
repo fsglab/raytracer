@@ -16,6 +16,6 @@ public class Color {
             ((aI(b) & 0xFF) << 0);
 	}
 	private int aI(double c){
-	    return (int)(c * 255 + 0.f);
+	    return (int)(c * 255 + 0.5f);
 	}
 }
