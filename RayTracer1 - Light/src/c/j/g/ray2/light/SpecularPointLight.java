@@ -32,7 +32,7 @@ public class SpecularPointLight implements Light {
 
 	Vec3 lightDir = nor(sub(hi.getGHitPoint(), origin));
 	Vec3 surfaceToLight = mul(lightDir, -1);
-	double brightness = cosAngle(hi.getGNormal(), surfaceToLight);
+	double brightness = i * cosAngle(hi.getGNormal(), surfaceToLight);
 	if (brightness < 0)
 	    return Color.BLACK;
 
