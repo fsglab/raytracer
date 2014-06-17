@@ -11,7 +11,7 @@ import static java.lang.Math.*;
 public class Sphere {
     private final Color color, specColor;
     private final Vec3 origin;
-    private final double radius;
+    private final double radius, e;
     
     public Vec3 normalAt(Vec3 p){
 	return nor(sub(p, origin));
