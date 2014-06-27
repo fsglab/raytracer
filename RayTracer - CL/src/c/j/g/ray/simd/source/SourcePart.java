@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This can be used to define the code extracted by the {@link SourceCreater}.
+ * This can be used to define the code extracted by the {@link SourceCreator}.
  * If this annotation is used on a class the provided code will be the head of
  * the extracted. if it annotates a method no order is guaranteed.
  * 

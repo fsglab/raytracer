@@ -1,9 +1,12 @@
 package c.j.g.ray.simd.tests;
 
-import c.j.g.ray.simd.source.SourceCreater;
+import c.j.g.ray.simd.geo.Ray;
+import c.j.g.ray.simd.source.SourceCreator;
 import c.j.g.ray.simd.source.SourceFinal;
+import c.j.g.ray.simd.source.SourceInclude;
 import c.j.g.ray.simd.source.SourcePart;
 
+@SourceInclude(Ray.class)
 public class KernelBuilderTest {
 
 	@SourcePart({ "//kernel", "Line 1" })
@@ -13,7 +16,7 @@ public class KernelBuilderTest {
 	public static void main(String... s) {
 		System.setProperty("debug", "true");
 		System.out
-				.println(new SourceCreater(new KernelBuilderTest()).getCode());
+				.println(new SourceCreator(new KernelBuilderTest()).getCode());
 	}
 
 	@SourceFinal

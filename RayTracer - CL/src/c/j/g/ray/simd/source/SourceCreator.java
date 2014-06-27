@@ -9,12 +9,13 @@ import c.j.g.ray.simd.util.Util;
 /**
  * This will build the kernel code from a given object.
  * 
+ * @see SourceInclude
  * @see SourcePart
  * @see SourceFinal
  * @author CJG
  *
  */
-public class SourceCreater {
+public class SourceCreator {
 
 	/**
 	 * The extracted code.
@@ -31,13 +32,13 @@ public class SourceCreater {
 	 * @param source
 	 *            the source object which contains the code and fields.
 	 */
-	public <Source extends Object> SourceCreater(Source source) {
+	public <Source extends Object> SourceCreator(Source source) {
 		boolean debug = "true".equalsIgnoreCase(System.getProperty("debug"));
 		if (debug)
 			System.out.println("D: Extract source code from: \"" + source
 					+ "\"");
 		try {
-			String code = extractBasicCode(source);
+			String code = extractBasicCode(source.getClass());
 			code = setDefines(source, code);
 			sourceCode = code;
 		} catch (Exception e) {
@@ -73,29 +74,51 @@ public class SourceCreater {
 	/**
 	 * This will extract the basic code from the given source object. If the
 	 * object class is annotated with the {@link SourcePart} it will be the
-	 * first code. Annotated methods provide no given order.
+	 * first code but after includes. Annotated methods provide no given order.
 	 * 
 	 * @param source
 	 *            the object which contains the source.
 	 * @return the extracted raw source.
 	 */
-	private <Source extends Object> String extractBasicCode(Source source) {
+	private <Source extends Object> String extractBasicCode(Class<Source> source) {
 
 		boolean debug = "true".equalsIgnoreCase(System.getProperty("debug"));
 
-		Class<? extends Object> sourceClass = source.getClass();
-
 		StringBuilder builder = new StringBuilder();
 
-		if (sourceClass.isAnnotationPresent(SourcePart.class)) {
-			if (debug)
-				System.out.println("D: Extract from "
-						+ sourceClass.getSimpleName() + " class");
-			addLines(sourceClass.getAnnotation(SourcePart.class).value(),
-					builder, debug);
+		if (source.isAnnotationPresent(SourceInclude.class)) {
+			Class<?>[] includs = source.getAnnotation(SourceInclude.class)
+					.value();
+			for (Class<?> clazz : includs) {
+				if (debug)
+					System.out.println("D: Include \"" + clazz.getSimpleName()
+							+ "\"");
+				builder.append(extractBasicCode(clazz));
+				if(debug)
+					System.out.println("D: Include finished");
+			}
 		}
 
-		for (Method m : sourceClass.getDeclaredMethods())
+		if (source.isAnnotationPresent(SourcePart.class)) {
+			if (debug) {
+				System.out.print("D: Extract from " + source.getSimpleName());
+				if (source.isAnnotation())
+					System.out.println(" annotation.");
+				else if (source.isAnonymousClass())
+					System.out.println(" anonymous class.");
+				else if (source.isEnum())
+					System.out.println(" enum.");
+				else if (source.isInterface())
+					System.out.println(" interface.");
+				else
+					System.out.println(" class.");
+			}
+
+			addLines(source.getAnnotation(SourcePart.class).value(), builder,
+					debug);
+		}
+
+		for (Method m : source.getDeclaredMethods())
 			if (m.isAnnotationPresent(SourcePart.class)) {
 				if (debug)
 					System.out.println("D: Extract from " + Util.toString(m));

@@ -51,7 +51,7 @@ import org.lwjgl.opencl.Util;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 
-import c.j.g.ray.simd.source.SourceCreater;
+import c.j.g.ray.simd.source.SourceCreator;
 import c.j.g.ray.simd.source.SourceFinal;
 import c.j.g.ray.simd.source.SourcePart;
 
@@ -208,7 +208,7 @@ public class OpenCLGLTest {
 
 		// kernel
 		Kernel kernelCode = new Kernel(PARTICLES, WIDTH, HEIGHT, MIN_DISTANCE);
-		String src = new SourceCreater(kernelCode).getCode();
+		String src = new SourceCreator(kernelCode).getCode();
 		System.out.println(src);
 		program = clCreateProgramWithSource(context, src, null);
 		int err = clBuildProgram(program, devices.get(0), "", null);
