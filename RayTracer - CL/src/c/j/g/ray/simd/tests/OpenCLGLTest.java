@@ -13,7 +13,7 @@ import org.lwjgl.opencl.*;
 import org.lwjgl.opencl.Util;
 import org.lwjgl.opengl.*;
 
-public class OpenCLTest {
+public class OpenCLGLTest {
 	@SourcePart({
 			"kernel void",
 			"adv(global float *x, global float *y, global float *vx, global float *vy){",
