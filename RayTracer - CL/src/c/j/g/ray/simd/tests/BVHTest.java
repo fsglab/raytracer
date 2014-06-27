@@ -23,8 +23,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.Arrays;
-import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -52,14 +50,6 @@ public class BVHTest extends JPanel implements MouseListener {
 	}
 
 	private BoundingSphereNode root;
-
-	public static List<String> convertStringToLineString(String str) {
-		if (str == null)
-			return null;
-
-		String[] parts = str.split("\n");
-		return Arrays.asList(parts);
-	}
 
 	@Override
 	public void paintComponent(Graphics g) {
