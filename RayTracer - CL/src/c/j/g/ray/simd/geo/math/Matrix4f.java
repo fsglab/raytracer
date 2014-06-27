@@ -14,10 +14,19 @@ public class Matrix4f {
 		this.m = m;
 	}
 
+	public Matrix4f(Matrix4f other) {
+		this(new float[] { other.m[0], other.m[1], other.m[2], other.m[3],
+				other.m[4], other.m[5], other.m[6], other.m[7], other.m[8],
+				other.m[9], other.m[10], other.m[11], other.m[12], other.m[13],
+				other.m[14], other.m[15] });
+	}
+
 	public Matrix4f(Vector3f origin, Quaternion quat) {
-		
-		m = new float[16];
-		
+
+		this(new float[16]);
+
+		final float scaleX = 1, scaleY = 1, scaleZ = 1;
+
 		final float xs = quat.getX() * 2f, ys = quat.getY() * 2f, zs = quat
 				.getZ() * 2f;
 		final float wx = quat.getW() * xs, wy = quat.getW() * ys, wz = quat
@@ -26,7 +35,6 @@ public class Matrix4f {
 				.getX() * zs;
 		final float yy = quat.getY() * ys, yz = quat.getY() * zs, zz = quat
 				.getZ() * zs;
-		final float scaleX = 1, scaleY = 1, scaleZ = 1;
 
 		m[M00] = scaleX * (1.0f - (yy + zz));
 		m[M01] = scaleY * (xy - wz);
@@ -43,16 +51,11 @@ public class Matrix4f {
 		m[M22] = scaleZ * (1.0f - (xx + yy));
 		m[M23] = origin.getZ();
 
-		m[M30] = 0.f;
-		m[M31] = 0.f;
-		m[M32] = 0.f;
+		// m[M30] = 0.f;
+		// m[M31] = 0.f;
+		// m[M32] = 0.f;
 		m[M33] = 1.0f;
 
-	}
-	
-	public Vector3f transform(Vector3f vec) {
-		//float x = 
-		return null;
 	}
 
 	public Matrix4f mul(Matrix4f r) {
