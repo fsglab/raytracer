@@ -58,6 +58,14 @@ public class Matrix4f {
 
 	}
 
+	public float get(int m) {
+		return this.m[m];
+	}
+
+	public float[] getM() {
+		return m;
+	}
+
 	public Matrix4f mul(Matrix4f r) {
 		float[] matb = r.m, tmp = new float[16];
 
@@ -97,19 +105,11 @@ public class Matrix4f {
 		return new Matrix4f(tmp);
 	}
 
-	public float[] getM() {
-		return m;
-	}
-
-	public float get(int m) {
-		return this.m[m];
+	public void set(int m, float value) {
+		this.m[m] = value;
 	}
 
 	public void setM(float[] m) {
 		this.m = m;
-	}
-
-	public void set(int m, float value) {
-		this.m[m] = value;
 	}
 }

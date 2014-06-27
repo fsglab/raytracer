@@ -4,10 +4,10 @@ import c.j.g.ray.simd.geo.Body;
 
 public class BoundingSphereNode {
 
-	private BoundingSphereNode parent;
-	public BoundingSphere bounds;
 	public Body body;
+	public BoundingSphere bounds;
 	public BoundingSphereNode child1, child2;
+	private BoundingSphereNode parent;
 
 	public BoundingSphereNode(Body b) {
 		this.body = b;
@@ -20,8 +20,10 @@ public class BoundingSphereNode {
 		this.parent = parent;
 	}
 
-	public boolean isLeaf() {
-		return body != null;
+	private double getGrowth(BoundingSphere bs) {
+		BoundingSphere bigger = new BoundingSphere(this.bounds, bs);
+		return bigger.getRadius() * bigger.getRadius()
+				- this.bounds.getRadius() * this.bounds.getRadius();
 	}
 
 	public void inserte(Body nbody) {
@@ -38,9 +40,8 @@ public class BoundingSphereNode {
 		}
 	}
 
-	private double getGrowth(BoundingSphere bs) {
-		BoundingSphere bigger = new BoundingSphere(this.bounds, bs);
-		return bigger.getRadius() * bigger.getRadius() - this.bounds.getRadius() * this.bounds.getRadius();
+	public boolean isLeaf() {
+		return body != null;
 	}
 
 	private void recalcSize() {

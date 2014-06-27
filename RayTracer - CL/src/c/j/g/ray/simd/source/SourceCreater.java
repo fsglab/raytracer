@@ -1,6 +1,8 @@
 package c.j.g.ray.simd.source;
 
-import java.lang.reflect.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 import c.j.g.ray.simd.util.Util;
 
@@ -21,8 +23,8 @@ public class SourceCreater {
 
 	/**
 	 * This will build the source code from the given source object. If the
-	 * source object contains multiply methods annotated with {@link SourcePart} those
-	 * will be added in no specific order.
+	 * source object contains multiply methods annotated with {@link SourcePart}
+	 * those will be added in no specific order.
 	 * 
 	 * @see SourcePart
 	 * @see SourceFinal
@@ -48,6 +50,49 @@ public class SourceCreater {
 		}
 	}
 
+	private void addStrings(String[] lines, StringBuilder builder, boolean debug) {
+		for (String code : lines)
+			if (!code.trim().startsWith("//")) {
+				builder.append(code).append("\n");
+				if (debug)
+					System.out.println("D: Add \"" + code + "\"");
+			} else if (debug)
+				System.out.println("D: Ignore \"" + code + "\"");
+	}
+
+	private <Source extends Object> String extractBasicCode(Source source) {
+
+		boolean debug = "true".equalsIgnoreCase(System.getProperty("debug"));
+
+		Class<? extends Object> sourceClass = source.getClass();
+
+		StringBuilder builder = new StringBuilder();
+
+		if (sourceClass.isAnnotationPresent(SourcePart.class)) {
+			if (debug)
+				System.out.println("D: Extract from "
+						+ sourceClass.getSimpleName() + " class");
+			addStrings(sourceClass.getAnnotation(SourcePart.class).value(),
+					builder, debug);
+		}
+
+		for (Method m : sourceClass.getDeclaredMethods())
+			if (m.isAnnotationPresent(SourcePart.class)) {
+				if (debug)
+					System.out.println("D: Extract from " + Util.toString(m));
+				addStrings(m.getAnnotation(SourcePart.class).value(), builder,
+						debug);
+			}
+		String code = builder.toString();
+		if (code.isEmpty())
+			throw new IllegalArgumentException("Empty code for: " + source);
+		return code;
+	}
+
+	public String getCode() {
+		return sourceCode;
+	}
+
 	private <Source extends Object> String setDefines(Source source, String code)
 			throws IllegalArgumentException, IllegalAccessException {
 
@@ -68,47 +113,5 @@ public class SourceCreater {
 			}
 
 		return code;
-	}
-
-	private <Source extends Object> String extractBasicCode(Source source) {
-
-		boolean debug = "true".equalsIgnoreCase(System.getProperty("debug"));
-
-		Class<? extends Object> sourceClass = source.getClass();
-
-		StringBuilder builder = new StringBuilder();
-
-		if (sourceClass.isAnnotationPresent(SourcePart.class)) {
-			if (debug)
-				System.out.println("D: Extract from " + sourceClass.getSimpleName()+" class");
-			addStrings(sourceClass.getAnnotation(SourcePart.class).value(), builder,
-					debug);
-		}
-
-		for (Method m : sourceClass.getDeclaredMethods())
-			if (m.isAnnotationPresent(SourcePart.class)) {
-				if (debug)
-					System.out.println("D: Extract from " + Util.toString(m));
-				addStrings(m.getAnnotation(SourcePart.class).value(), builder,
-						debug);
-			}
-		String code = builder.toString();
-		if (code.isEmpty())
-			throw new IllegalArgumentException("Empty code for: " + source);
-		return code;
-	}
-
-	private void addStrings(String[] lines, StringBuilder builder, boolean debug) {
-		for (String code : lines)
-			if (!code.trim().startsWith("//")) {
-				builder.append(code).append("\n");
-				if (debug)
-					System.out.println("D: Add \"" + code + "\"");
-			} else if (debug)
-				System.out.println("D: Ignore \"" + code + "\"");
-	}
-
-	public String getCode() {
-		return sourceCode;
 	}
 }

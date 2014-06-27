@@ -1,17 +1,59 @@
 package c.j.g.ray.simd.tests;
 
-import c.j.g.ray.simd.source.*;
-import static org.lwjgl.opencl.CL10.*;
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opencl.CL10.CL_DEVICE_TYPE_GPU;
+import static org.lwjgl.opencl.CL10.CL_MEM_COPY_HOST_PTR;
+import static org.lwjgl.opencl.CL10.CL_MEM_READ_WRITE;
+import static org.lwjgl.opencl.CL10.CL_QUEUE_PROFILING_ENABLE;
+import static org.lwjgl.opencl.CL10.clBuildProgram;
+import static org.lwjgl.opencl.CL10.clCreateBuffer;
+import static org.lwjgl.opencl.CL10.clCreateCommandQueue;
+import static org.lwjgl.opencl.CL10.clCreateKernel;
+import static org.lwjgl.opencl.CL10.clCreateProgramWithSource;
+import static org.lwjgl.opencl.CL10.clEnqueueNDRangeKernel;
+import static org.lwjgl.opencl.CL10.clEnqueueReadBuffer;
+import static org.lwjgl.opencl.CL10.clEnqueueWriteBuffer;
+import static org.lwjgl.opencl.CL10.clFinish;
+import static org.lwjgl.opencl.CL10.clReleaseCommandQueue;
+import static org.lwjgl.opencl.CL10.clReleaseContext;
+import static org.lwjgl.opencl.CL10.clReleaseKernel;
+import static org.lwjgl.opencl.CL10.clReleaseProgram;
+import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.GL_LINES;
+import static org.lwjgl.opengl.GL11.GL_MODELVIEW;
+import static org.lwjgl.opengl.GL11.GL_PROJECTION;
+import static org.lwjgl.opengl.GL11.GL_QUADS;
+import static org.lwjgl.opengl.GL11.glBegin;
+import static org.lwjgl.opengl.GL11.glClear;
+import static org.lwjgl.opengl.GL11.glColor3f;
+import static org.lwjgl.opengl.GL11.glEnd;
+import static org.lwjgl.opengl.GL11.glMatrixMode;
+import static org.lwjgl.opengl.GL11.glOrtho;
+import static org.lwjgl.opengl.GL11.glVertex2f;
 
-import java.nio.*;
+import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 import java.util.List;
 
-import org.lwjgl.*;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.LWJGLException;
+import org.lwjgl.PointerBuffer;
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.opencl.*;
+import org.lwjgl.opencl.CL;
+import org.lwjgl.opencl.CL10;
+import org.lwjgl.opencl.CLCommandQueue;
+import org.lwjgl.opencl.CLContext;
+import org.lwjgl.opencl.CLDevice;
+import org.lwjgl.opencl.CLKernel;
+import org.lwjgl.opencl.CLMem;
+import org.lwjgl.opencl.CLPlatform;
+import org.lwjgl.opencl.CLProgram;
 import org.lwjgl.opencl.Util;
-import org.lwjgl.opengl.*;
+import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.DisplayMode;
+
+import c.j.g.ray.simd.source.SourceCreater;
+import c.j.g.ray.simd.source.SourceFinal;
+import c.j.g.ray.simd.source.SourcePart;
 
 public class OpenCLGLTest {
 	@SourcePart({
@@ -48,13 +90,6 @@ public class OpenCLGLTest {
 			"}" })
 	private static class Kernel {
 
-		@Override
-		public String toString() {
-			return String.format(
-					"Kernel [particels=%s, width=%s, height=%s, mindist=%s]",
-					particels, width, height, mindist);
-		}
-
 		@SourceFinal
 		private final int particels, width, height, mindist;
 
@@ -65,53 +100,41 @@ public class OpenCLGLTest {
 			this.mindist = mindist;
 		}
 
-	}
-
-	private static final int PARTICLES = (int) 1.5e2;
-	private static final int WIDTH = 600;
-	private static final int HEIGHT = 400;
-	private static final int MIN_DISTANCE = 20;
-	private static final int START_VEL = 10;
-	private static FloatBuffer x, y, vx, vy;
-	private static CLCommandQueue queue;
-	private static CLKernel kernel;
-	private static PointerBuffer kernel1DGlobalWorkSize;
-	private static CLMem xMem, yMem, vxMem, vyMem;
-	private static CLContext context;
-	private static CLProgram program;
-
-	public static void main(String... vargs) throws LWJGLException {
-		System.setProperty("debug", "true");
-
-		initGL();
-		initCL();
-
-		glMatrixMode(GL_MODELVIEW);
-		while (!Display.isCloseRequested()) {
-
-			stepCL();
-
-			glClear(GL_COLOR_BUFFER_BIT);
-			drawAllParticles();
-
-			Display.update();
-			Display.sync(30);
+		@Override
+		public String toString() {
+			return String.format(
+					"Kernel [particels=%s, width=%s, height=%s, mindist=%s]",
+					particels, width, height, mindist);
 		}
 
-		freeGL();
-		freeCL();
 	}
 
-	static void freeGL() {
-		Display.destroy();
-	}
+	private static CLContext context;
+	private static final int HEIGHT = 400;
+	private static CLKernel kernel;
+	private static PointerBuffer kernel1DGlobalWorkSize;
+	private static final int MIN_DISTANCE = 20;
+	private static final int PARTICLES = (int) 1.5e2;
+	private static CLProgram program;
+	private static CLCommandQueue queue;
+	private static final int START_VEL = 10;
+	private static final int WIDTH = 600;
+	private static FloatBuffer x, y, vx, vy;
+	private static CLMem xMem, yMem, vxMem, vyMem;
 
-	static void freeCL() {
-		clReleaseKernel(kernel);
-		clReleaseProgram(program);
-		clReleaseCommandQueue(queue);
-		clReleaseContext(context);
-		CL.destroy();
+	public static void checkProgram(CLProgram program, CLDevice device) {
+		PointerBuffer buffer = BufferUtils.createPointerBuffer(1);
+		CL10.clGetProgramBuildInfo(program, device, CL10.CL_PROGRAM_BUILD_LOG,
+				null, buffer);
+		if (buffer.get(0) > 2) {
+			ByteBuffer log = BufferUtils.createByteBuffer((int) buffer.get(0));
+			CL10.clGetProgramBuildInfo(program, device,
+					CL10.CL_PROGRAM_BUILD_LOG, log, buffer);
+			byte bytes[] = new byte[log.capacity()];
+			log.get(bytes);
+			System.out.println(String.format("CL Compiler Error/Warning:\n %s",
+					new String(bytes)));
+		}
 	}
 
 	static void drawAllParticles() {
@@ -141,12 +164,16 @@ public class OpenCLGLTest {
 		glEnd();
 	}
 
-	private static void stepCL() {
-		clEnqueueNDRangeKernel(queue, kernel, 1, null, kernel1DGlobalWorkSize,
-				null, null, null);
-		clEnqueueReadBuffer(queue, xMem, 1, 0, x, null, null);
-		clEnqueueReadBuffer(queue, yMem, 1, 0, y, null, null);
-		clFinish(queue);
+	static void freeCL() {
+		clReleaseKernel(kernel);
+		clReleaseProgram(program);
+		clReleaseCommandQueue(queue);
+		clReleaseContext(context);
+		CL.destroy();
+	}
+
+	static void freeGL() {
+		Display.destroy();
 	}
 
 	private static void initCL() throws LWJGLException {
@@ -198,21 +225,6 @@ public class OpenCLGLTest {
 		kernel1DGlobalWorkSize.put(0, PARTICLES);
 	}
 
-	public static void checkProgram(CLProgram program, CLDevice device) {
-		PointerBuffer buffer = BufferUtils.createPointerBuffer(1);
-		CL10.clGetProgramBuildInfo(program, device, CL10.CL_PROGRAM_BUILD_LOG,
-				null, buffer);
-		if (buffer.get(0) > 2) {
-			ByteBuffer log = BufferUtils.createByteBuffer((int) buffer.get(0));
-			CL10.clGetProgramBuildInfo(program, device,
-					CL10.CL_PROGRAM_BUILD_LOG, log, buffer);
-			byte bytes[] = new byte[log.capacity()];
-			log.get(bytes);
-			System.out.println(String.format("CL Compiler Error/Warning:\n %s",
-					new String(bytes)));
-		}
-	}
-
 	private static void initGL() throws LWJGLException {
 		Display.setDisplayMode(new DisplayMode(WIDTH, HEIGHT));
 		Display.setTitle("Particle Demo");
@@ -222,11 +234,41 @@ public class OpenCLGLTest {
 		glOrtho(0, WIDTH, HEIGHT, 0, 1, -1);
 	}
 
+	public static void main(String... vargs) throws LWJGLException {
+		System.setProperty("debug", "true");
+
+		initGL();
+		initCL();
+
+		glMatrixMode(GL_MODELVIEW);
+		while (!Display.isCloseRequested()) {
+
+			stepCL();
+
+			glClear(GL_COLOR_BUFFER_BIT);
+			drawAllParticles();
+
+			Display.update();
+			Display.sync(30);
+		}
+
+		freeGL();
+		freeCL();
+	}
+
 	private static float[] randomFloatArray(int count, float min, float max) {
 		float[] ret = new float[count];
 		for (int i = 0; i < ret.length; i++)
 			ret[i] = (float) (Math.random() * (max - min) + min);
 		return ret;
+	}
+
+	private static void stepCL() {
+		clEnqueueNDRangeKernel(queue, kernel, 1, null, kernel1DGlobalWorkSize,
+				null, null, null);
+		clEnqueueReadBuffer(queue, xMem, 1, 0, x, null, null);
+		clEnqueueReadBuffer(queue, yMem, 1, 0, y, null, null);
+		clFinish(queue);
 	}
 
 	private static FloatBuffer toFloatBuffer(float[] floats) {
