@@ -2,6 +2,8 @@ package c.j.g.ray.simd.kernel;
 
 import java.lang.reflect.*;
 
+import c.j.g.ray.simd.util.Util;
+
 /**
  * This will build the kernel code from a given object.
  * 
@@ -18,8 +20,12 @@ public class KernelCreater {
 	private final String kernelCode;
 
 	/**
-	 * This will build the kernel source from the given kernel object.
+	 * This will build the kernel source from the given kernel object. If the
+	 * kernel contains multiply methods annotated with {@link KernelPart} those
+	 * will be added in no specific order.
 	 * 
+	 * @see KernelPart
+	 * @see KernelFinal
 	 * @param kernel
 	 *            the kernel object which contains the code and fields.
 	 */
@@ -72,7 +78,9 @@ public class KernelCreater {
 
 		StringBuilder builder = new StringBuilder();
 		for (Method m : kernelClass.getDeclaredMethods())
-			if (m.isAnnotationPresent(KernelPart.class))
+			if (m.isAnnotationPresent(KernelPart.class)) {
+				if (debug)
+					System.out.println("D: Extract from "+Util.toString(m));
 				for (String code : m.getAnnotation(KernelPart.class).value())
 					if (!code.trim().startsWith("//")) {
 						builder.append(code).append("\n");
@@ -80,6 +88,7 @@ public class KernelCreater {
 							System.out.println("D: Add \"" + code + "\"");
 					} else if (debug)
 						System.out.println("D: Ignore \"" + code + "\"");
+			}
 		String code = builder.toString();
 		if (code.isEmpty())
 			throw new IllegalArgumentException("Empty code for: " + kernel);

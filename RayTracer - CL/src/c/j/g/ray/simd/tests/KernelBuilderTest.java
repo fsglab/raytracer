@@ -12,10 +12,10 @@ public class KernelBuilderTest {
 	}
 
 	@KernelPart({"//kernel","Line 1"})
-	private native void kernel();
+	private static native void kernel(byte[] b, short s);
 
 	@KernelPart({"//kernel2", "Line 2{", "3  //v.a.l. will be replaced by '5'.","4  v.a.l. = 'val'", "} end line 5" })
-	private native void kernel2();
+	private native void kernel2(KernelBuilderTest test);
 
 	@KernelFinal
 	private final int val = 5;
