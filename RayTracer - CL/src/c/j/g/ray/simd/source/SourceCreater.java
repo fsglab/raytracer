@@ -84,6 +84,8 @@ public class SourceCreater {
 						debug);
 			}
 		String code = builder.toString();
+		// code = code.trim().replaceAll("[ \t]+", " ");
+
 		if (code.isEmpty())
 			throw new IllegalArgumentException("Empty code for: " + source);
 		return code;
