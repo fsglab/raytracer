@@ -1,6 +1,6 @@
 package c.j.g.ray.simd.tests;
 
-import c.j.g.ray.simd.kernel.*;
+import c.j.g.ray.simd.source.*;
 import static org.lwjgl.opencl.CL10.*;
 import static org.lwjgl.opengl.GL11.*;
 

@@ -1,8 +1,8 @@
 package c.j.g.ray.simd.tests;
 
-import c.j.g.ray.simd.kernel.SourceCreater;
-import c.j.g.ray.simd.kernel.SourceFinal;
-import c.j.g.ray.simd.kernel.SourcePart;
+import c.j.g.ray.simd.source.SourceCreater;
+import c.j.g.ray.simd.source.SourceFinal;
+import c.j.g.ray.simd.source.SourcePart;
 
 public class KernelBuilderTest {
 

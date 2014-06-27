@@ -1,4 +1,4 @@
-package c.j.g.ray.simd.kernel;
+package c.j.g.ray.simd.source;
 
 import java.lang.reflect.*;
 
