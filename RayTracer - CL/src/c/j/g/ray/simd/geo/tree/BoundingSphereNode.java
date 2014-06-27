@@ -113,7 +113,12 @@ public class BoundingSphereNode {
 				- this.bounds.getRadius() * this.bounds.getRadius();
 	}
 
-	public void inserte(Body nbody) {
+	/**
+	 * Inserts the given body to this tree.
+	 * @param nbody the body to add.
+	 * @return this for chaining.
+	 */
+	public BoundingSphereNode inserte(Body nbody) {
 		if (isLeaf()) {
 			child1 = new BoundingSphereNode(body, this);
 			child2 = new BoundingSphereNode(nbody, this);
@@ -125,6 +130,7 @@ public class BoundingSphereNode {
 					.getGrowth(bs) ? child1 : child2;
 			node.inserte(nbody);
 		}
+		return this;
 	}
 
 	/**
