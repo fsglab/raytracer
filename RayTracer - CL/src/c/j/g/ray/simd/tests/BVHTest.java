@@ -43,6 +43,7 @@ public class BVHTest extends JPanel implements MouseListener {
 		j.setSize(600, 400);
 		j.setLocationRelativeTo(null);
 		j.setContentPane(new BVHTest());
+		j.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		j.setVisible(true);
 	}
 
@@ -124,8 +125,7 @@ public class BVHTest extends JPanel implements MouseListener {
 			root = null;
 		} else if (SwingUtilities.isLeftMouseButton(arg0)) {
 			Vector3f pos = new Vector3f(arg0.getX(), arg0.getY(), 0);
-			// float r = (float) (5 + Math.random() * 45);
-			float r = 10;
+			 float r = (float) (5 + Math.random() * 45);
 			Sphere s = new Sphere(pos, r);
 			if (root == null)
 				root = new BoundingSphereNode(s);
