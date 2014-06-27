@@ -50,7 +50,17 @@ public class SourceCreater {
 		}
 	}
 
-	private void addStrings(String[] lines, StringBuilder builder, boolean debug) {
+	/**
+	 * This will add the given lines to the StringBuilder.
+	 * 
+	 * @param lines
+	 *            the lines to add. Lines starting with '//' will be ignored.
+	 * @param builder
+	 *            the StringBuilder which will contain the code.
+	 * @param debug
+	 *            if the debug flag is set.
+	 */
+	private void addLines(String[] lines, StringBuilder builder, boolean debug) {
 		for (String code : lines)
 			if (!code.trim().startsWith("//")) {
 				builder.append(code).append("\n");
@@ -60,6 +70,15 @@ public class SourceCreater {
 				System.out.println("D: Ignore \"" + code + "\"");
 	}
 
+	/**
+	 * This will extract the basic code from the given source object. If the
+	 * object class is annotated with the {@link SourcePart} it will be the
+	 * first code. Annotated methods provide no given order.
+	 * 
+	 * @param source
+	 *            the object which contains the source.
+	 * @return the extracted raw source.
+	 */
 	private <Source extends Object> String extractBasicCode(Source source) {
 
 		boolean debug = "true".equalsIgnoreCase(System.getProperty("debug"));
@@ -72,7 +91,7 @@ public class SourceCreater {
 			if (debug)
 				System.out.println("D: Extract from "
 						+ sourceClass.getSimpleName() + " class");
-			addStrings(sourceClass.getAnnotation(SourcePart.class).value(),
+			addLines(sourceClass.getAnnotation(SourcePart.class).value(),
 					builder, debug);
 		}
 
@@ -80,7 +99,7 @@ public class SourceCreater {
 			if (m.isAnnotationPresent(SourcePart.class)) {
 				if (debug)
 					System.out.println("D: Extract from " + Util.toString(m));
-				addStrings(m.getAnnotation(SourcePart.class).value(), builder,
+				addLines(m.getAnnotation(SourcePart.class).value(), builder,
 						debug);
 			}
 		String code = builder.toString();
@@ -91,10 +110,29 @@ public class SourceCreater {
 		return code;
 	}
 
+	/**
+	 * The extracted code.
+	 * 
+	 * @return {@link #sourceCode}
+	 */
 	public String getCode() {
 		return sourceCode;
 	}
 
+	/**
+	 * This will set the final variables. It replaces every string named like
+	 * the annotated fields with there value.
+	 * 
+	 * @param source
+	 *            the source object.
+	 * @param code
+	 *            the raw code extracted by {@link #extractBasicCode(Object)}
+	 * @return the provided code with replaced defines.
+	 * @throws IllegalArgumentException
+	 *             this will be thrown if a annotated field is not final.
+	 * @throws IllegalAccessException
+	 *             if the security manager is to high but the field is private.
+	 */
 	private <Source extends Object> String setDefines(Source source, String code)
 			throws IllegalArgumentException, IllegalAccessException {
 

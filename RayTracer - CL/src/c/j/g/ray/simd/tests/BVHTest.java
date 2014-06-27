@@ -110,25 +110,25 @@ public class BVHTest extends JPanel implements MouseListener {
 	private void paintNodeBounds(Graphics g, BoundingSphereNode node) {
 		if (!node.isLeaf()) {
 			g.setColor(Color.RED);
-			int r = (int) node.bounds.getRadius();
-			int x = (int) node.bounds.getOrigin().getX(), y = (int) node.bounds
-					.getOrigin().getY();
+			int r = (int) node.getBounds().getRadius();
+			int x = (int) node.getBounds().getOrigin().getX(), y = (int) node
+					.getBounds().getOrigin().getY();
 			g.drawOval(x - r, y - r, r + r, r + r);
-			paintNodeBounds(g, node.child1);
-			paintNodeBounds(g, node.child2);
+			paintNodeBounds(g, node.getChild1());
+			paintNodeBounds(g, node.getChild2());
 		}
 	}
 
 	private void paintNodeLeaf(Graphics g, BoundingSphereNode node) {
 		if (node.isLeaf()) {
 			g.setColor(Color.DARK_GRAY);
-			int r = (int) node.bounds.getRadius();
-			int x = (int) node.bounds.getOrigin().getX(), y = (int) node.bounds
-					.getOrigin().getY();
+			int r = (int) node.getBounds().getRadius();
+			int x = (int) node.getBounds().getOrigin().getX(), y = (int) node
+					.getBounds().getOrigin().getY();
 			g.fillOval(x - r, y - r, r + r, r + r);
 		} else {
-			paintNodeLeaf(g, node.child1);
-			paintNodeLeaf(g, node.child2);
+			paintNodeLeaf(g, node.getChild1());
+			paintNodeLeaf(g, node.getChild2());
 		}
 	}
 
