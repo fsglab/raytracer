@@ -1,12 +1,11 @@
 package c.j.g.ray.simd.tests;
 
-import c.j.g.ray.simd.geo.Ray;
 import c.j.g.ray.simd.source.SourceCreator;
 import c.j.g.ray.simd.source.SourceFinal;
 import c.j.g.ray.simd.source.SourceInclude;
 import c.j.g.ray.simd.source.SourcePart;
 
-@SourceInclude(Ray.class)
+@SourceInclude(KernelBuilderTest.Include.class)
 public class KernelBuilderTest {
 
 	@SourcePart({ "//kernel", "Line 1" })
@@ -32,4 +31,9 @@ public class KernelBuilderTest {
 		return String.format("KernelBuilderTest [val=%s]", val);
 	}
 
+	@SourcePart({"a = 1;", "b = 2;"})
+	public static  interface Include{
+		
+	}
+	
 }

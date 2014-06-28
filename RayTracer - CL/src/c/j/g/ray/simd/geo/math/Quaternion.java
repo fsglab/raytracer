@@ -5,6 +5,10 @@ public class Quaternion {
 	private float x;
 	private float y;
 	private float z;
+	
+	public Quaternion(){
+		this(0,0,0,1);
+	}
 
 	public Quaternion(float x, float y, float z, float w) {
 		this.x = x;

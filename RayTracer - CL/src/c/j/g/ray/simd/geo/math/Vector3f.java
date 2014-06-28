@@ -11,6 +11,10 @@ public class Vector3f {
 		this.z = z;
 	}
 
+	public Vector3f() {
+	this(0,0,0);
+	}
+
 	public Vector3f abs() {
 		return new Vector3f(Math.abs(x), Math.abs(y), Math.abs(z));
 	}
