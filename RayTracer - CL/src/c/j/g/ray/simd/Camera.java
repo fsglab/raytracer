@@ -33,7 +33,7 @@ public class Camera {
 			float[] buf = new float[17];
 			buf[0] = fov;
 			System.arraycopy(translation.getM(), 0, buf, 1, 16);
-			buffer = Buffer.toFloatBuffer(buf);
+			buffer = Buffer.toBuffer(buf);
 		}
 
 	}

@@ -7,7 +7,7 @@ public class EyeRayCreatorTest {
 
 	public static void main(String... s){
 		Camera cam = new Camera();
-		new EyeRayCreator(cam);
+		new EyeRayCreator(cam, 600, 400);
 	}
 	
 }
